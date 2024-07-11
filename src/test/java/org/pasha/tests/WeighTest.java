@@ -1,18 +1,13 @@
-package fetch;
+package test.java.org.pasha.tests;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.pasha.pages.MainPage;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static org.pasha.constants.Constants.BASE_URL;
 import static org.pasha.constants.Constants.DIGIT_0;
 import static org.pasha.constants.Constants.DIGIT_1;
 import static org.pasha.constants.Constants.DIGIT_2;
@@ -25,21 +20,12 @@ import static org.pasha.constants.Constants.EQUALS;
 import static org.pasha.constants.Constants.GREATER;
 import static org.pasha.constants.Constants.LESS;
 
-public class WeighTest {
-
-    private WebDriver driver;
-
-    @BeforeClass
-    public void beforeClass() {
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.get(BASE_URL);
-    }
+public class WeighTest extends BaseTest {
 
     @Test(invocationCount = 1)
     public void testWeighBars() {
-        driver.navigate().refresh();
-        MainPage page = new MainPage(driver);
+        getDriver().navigate().refresh();
+        MainPage page = new MainPage(getDriver());
         Map<WebElement, String> left = new HashMap<>();
         left.put(page.getLeftBowlInput0(), DIGIT_0);
         left.put(page.getLeftBowlInput1(), DIGIT_1);
@@ -70,10 +56,5 @@ public class WeighTest {
             case LESS -> page.makeWeigh(left, right, DIGIT_0, DIGIT_1, page.getButton0(), page.getButton1());
             default -> Assert.fail(errorMessage);
         }
-    }
-
-    @AfterClass
-    public void afterClass() {
-        driver.quit();
     }
 }
