@@ -1,4 +1,4 @@
-package test.java.org.pasha.tests;
+package org.pasha.tests;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,7 @@ import java.util.Map;
 import org.openqa.selenium.WebElement;
 import org.pasha.pages.MainPage;
 import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.annotations.Test;
 
 import static org.pasha.constants.Constants.DIGIT_0;
@@ -56,5 +57,7 @@ public class WeighTest extends BaseTest {
             case LESS -> page.makeWeigh(left, right, DIGIT_0, DIGIT_1, page.getButton0(), page.getButton1());
             default -> Assert.fail(errorMessage);
         }
+
+        Reporter.log(page.getAllWeighResults(), true);
     }
 }

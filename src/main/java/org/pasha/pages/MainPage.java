@@ -15,6 +15,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.Reporter;
 
 import lombok.Getter;
 
@@ -136,6 +137,8 @@ public class MainPage {
 
     @Getter
     By gameInfoWeighingsBy = By.xpath("//div[@class='game-info']//li");
+    @Getter
+    By gameInfoAllWeighingsBy = By.xpath("//div[@class='game-info']");
 
     public MainPage(WebDriver driver) {
         this.driver = driver;
@@ -161,14 +164,17 @@ public class MainPage {
 
     public String makeWeigh(Map<WebElement, String> digitsToLeft, Map<WebElement, String> digitsToRight) {
         resetButton.click();
+        Reporter.log("Enter digits into left bowl's grid: " + digitsToLeft.values(), true);
         digitsToLeft.forEach(WebElement::sendKeys);
+        Reporter.log("Enter digits into right bowl's grid: " + digitsToRight.values(), true);
         digitsToRight.forEach(WebElement::sendKeys);
         weighButton.click();
-        waitForNewWeighResultAppears(getNumberOfExistingWeighResults());
+        String result = waitForNewWeighResultAppears(getNumberOfExistingWeighResults());
+        Reporter.log("result: " + result, true);
         return resultButton.getText();
     }
 
-    public void waitForNewWeighResultAppears(int numberOfExistingWeighResults) {
+    public String waitForNewWeighResultAppears(int numberOfExistingWeighResults) {
         try {
             ExpectedCondition<Boolean> condition = driver -> {
                 List<WebElement> webElements = new ArrayList<>();
@@ -182,6 +188,25 @@ public class MainPage {
             waitForText.ignoring(NoSuchElementException.class);
             waitForText.until(condition);
         } catch (Exception ignored) {
+        }
+        return getLatestWeighResults();
+    }
+
+    public String getLatestWeighResults() {
+        try {
+            List<WebElement> elements = driver.findElements(gameInfoWeighingsBy);
+            return elements.getLast().getText();
+        } catch (NullPointerException e) {
+            return "";
+        }
+    }
+
+    public String getAllWeighResults() {
+        try {
+            WebElement element = driver.findElement(gameInfoAllWeighingsBy);
+            return element.getText();
+        } catch (NullPointerException e) {
+            return "";
         }
     }
 
@@ -198,7 +223,9 @@ public class MainPage {
         try {
             button.click();
             alert = driver.switchTo().alert();
-            Assert.assertEquals(alert.getText(), "Yay! You find it!");
+            String alertText = alert.getText();
+            Reporter.log("alertText: " + alertText, true);
+            Assert.assertEquals(alertText, "Yay! You find it!");
         } finally {
             if (alert != null) {
                 alert.accept();
